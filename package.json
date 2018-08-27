@@ -1,0 +1,21 @@
+{
+  "name": "jyoudojimap",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "firebase serve",
+    "deploy": "firebase deploy",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deguchi/jyoudojimap.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/deguchi/jyoudojimap/issues"
+  },
+  "homepage": "https://github.com/deguchi/jyoudojimap#readme"
+}

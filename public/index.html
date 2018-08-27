@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Welcome to Firebase Hosting</title>
+
+  <!-- update the version number as needed -->
+  <script defer src="/__/firebase/5.4.1/firebase-app.js"></script>
+  <!-- include only the Firebase features as you need -->
+  <script defer src="/__/firebase/5.4.1/firebase-auth.js"></script>
+  <script defer src="/__/firebase/5.4.1/firebase-firestore.js"></script>
+  <!-- <script defer src="/__/firebase/5.4.1/firebase-messaging.js"></script> -->
+  <!-- <script defer src="/__/firebase/5.4.1/firebase-storage.js"></script> -->
+  <!-- initialize the SDK after all desired features are loaded -->
+  <script defer src="/__/firebase/init.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.min.js"></script>
+
+</head>
+
+<body>
+  <video style="position: fixed; top:0; left:0; height:0;" muted autoplay loop>
+    <source src="blank.mp4">
+    <source src=" blank.webm">
+  </video>
+  <script type="text/javascript">
+  </script>
+  <ul id="location">
+  </ul>
+  <ul id="messages"></ul>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      try {
+        let app = firebase.app();
+        let features = ['auth', 'database', 'messaging', 'storage'].filter(feature => typeof app[feature] ===
+          'function');
+        // document.getElementById('load').innerHTML = `Firebase SDK loaded with ${features.join(', ')}`;
+
+        // データベースの参照を準備
+        var messagesRef = firebase.firestore().collection('messages')
+
+        // メッセージを表示
+        messagesRef.onSnapshot(function (snapshot) {
+          snapshot.docChanges().forEach(function (change) {
+            if (change.type === 'added') {
+              $('<li>').text([change.doc.data().lat, change.doc.data().lon].join(',')).prependTo('#messages');
+            }
+            if (change.type === 'removed') {
+              console.log(`User ${change.doc.id} has gone offline.`);
+            }
+          });
+        });
+
+        if (navigator.geolocation) {
+          // 現在の位置情報取得を実施
+          navigator.geolocation.watchPosition(
+            // 位置情報取得成功時
+            function (pos) {
+              console.log(pos);
+              // 新規メッセージを投稿
+              messagesRef.add({
+                lat: pos.coords.latitude,
+                lon: pos.coords.longitude,
+              });
+              var location = "<li>" + "緯度：" + pos.coords.latitude + "</li>";
+              location += "<li>" + "経度：" + pos.coords.longitude + "</li>";
+              document.getElementById("location").innerHTML = location;
+            },
+            // 位置情報取得失敗時
+            function (pos) {
+              document.getElementById("location").innerHTML = "<li>位置情報が取得できませんでした。</li>";
+            });
+        } else {
+          window.alert("このブラウザではGeolocationが使えません");
+        }
+
+      } catch (e) {
+        console.error(e);
+        // document.getElementById('load').innerHTML = 'Error loading the Firebase SDK, check the console.';
+      }
+    });
+  </script>
+</body>
+
+</html>
