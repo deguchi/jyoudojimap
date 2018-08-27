@@ -20,37 +20,16 @@
 </head>
 
 <body>
-  <video style="position: fixed; top:0; left:0; height:0;" muted autoplay loop>
+  <video style="position: fixed; top:0; left:0; height:0;" playsinline muted autoplay loop>
     <source src="blank.mp4">
     <source src=" blank.webm">
   </video>
-  <script type="text/javascript">
-  </script>
+  <button onclick="start()">start</button>
   <ul id="location">
   </ul>
   <ul id="messages"></ul>
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      try {
-        let app = firebase.app();
-        let features = ['auth', 'database', 'messaging', 'storage'].filter(feature => typeof app[feature] ===
-          'function');
-        // document.getElementById('load').innerHTML = `Firebase SDK loaded with ${features.join(', ')}`;
-
-        // データベースの参照を準備
-        var messagesRef = firebase.firestore().collection('messages')
-
-        // メッセージを表示
-        messagesRef.onSnapshot(function (snapshot) {
-          snapshot.docChanges().forEach(function (change) {
-            if (change.type === 'added') {
-              $('<li>').text([change.doc.data().lat, change.doc.data().lon].join(',')).prependTo('#messages');
-            }
-            if (change.type === 'removed') {
-              console.log(`User ${change.doc.id} has gone offline.`);
-            }
-          });
-        });
+    function start() {
 
         if (navigator.geolocation) {
           // 現在の位置情報取得を実施
@@ -74,7 +53,28 @@
         } else {
           window.alert("このブラウザではGeolocationが使えません");
         }
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+      try {
+        let app = firebase.app();
+        // let features = ['auth', 'database', 'messaging', 'storage'].filter(feature => typeof app[feature] ===
+          // 'function');
+        // document.getElementById('load').innerHTML = `Firebase SDK loaded with ${features.join(', ')}`;
 
+        // データベースの参照を準備
+        window.messagesRef = firebase.firestore().collection('messages');
+
+        // メッセージを表示
+        messagesRef.onSnapshot(function (snapshot) {
+          snapshot.docChanges().forEach(function (change) {
+            if (change.type === 'added') {
+              $('<li>').text([change.doc.data().lat, change.doc.data().lon].join(',')).prependTo('#messages');
+            }
+            if (change.type === 'removed') {
+              console.log(`User ${change.doc.id} has gone offline.`);
+            }
+          });
+        });
       } catch (e) {
         console.error(e);
         // document.getElementById('load').innerHTML = 'Error loading the Firebase SDK, check the console.';
